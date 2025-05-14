@@ -79,8 +79,14 @@ st.set_page_config(page_title='自動回覆系統', layout='wide')
 
 st.title('自動回覆系統')
 
-# 使用者輸入來文內容
-query = st.text_area('請輸入來文內容', height=200)
+# 使用者輸入來文內容 (可直接使用下方範例進行測試)
+sample_text = (
+    "主旨：關於遲到扣薪的問題\n"
+    "內容：根據公司的規定，每遲到一分鐘就會扣除30元，到了第十分鐘不僅累計了原有的扣款，"
+    "還額外加上了全勤獎金等值的10分鐘扣款，合計高達5300元。請問這個處罰合理嗎。"
+    "另外還訂定排名獎懲制，出勤排名最後五名的還要罰款1000，這樣沒有違法嗎?"
+)
+query = st.text_area('請輸入來文內容', value=sample_text, height=200)
 
 # 選擇搜尋欄位
 option_map = {'歷史來文 (qs)': 'qs', '歷史回文 (answer)': 'answer'}

@@ -102,7 +102,7 @@ if st.button('產生回覆'):
             reply = chat_completion(prompt)
         # 顯示回覆結果
         st.subheader('回覆結果')
-        st.text_area('Language Model 回覆', value=reply, height=300)
+        st.text_area('語言模型 回覆', value=reply, height=300)
         # 顯示完整 Prompt
         st.subheader('組成的 Prompt')
         st.code(prompt, language='text')

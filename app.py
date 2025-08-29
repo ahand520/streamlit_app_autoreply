@@ -117,10 +117,10 @@ def on_select_change():
 st.markdown('**選擇範例來文自動帶入下方欄位：**')
 testdata_idx = 0
 if testdata_items:
-    testdata_idx = st.selectbox('選擇範例主旨', options=range(len(testdata_subjects)), format_func=lambda i: testdata_subjects[i], key='testdata_select', on_change=on_select_change)
+    testdata_idx = st.selectbox('選擇測試範例', options=range(len(testdata_subjects)), format_func=lambda i: testdata_subjects[i], key='testdata_select', on_change=on_select_change)
 
 # 使用者輸入來文內容
-query = st.text_area('請輸入來文內容', height=200, key='query_text')
+query = st.text_area('或自行輸入來文內容', height=200, key='query_text')
 
 # 選擇搜尋欄位
 option_map = {'歷史來文 (qs)': 'qs', '歷史回文 (answer)': 'answer'}

@@ -6,6 +6,29 @@ import faiss
 import numpy as np
 import requests
 
+# 讀取 testdata.txt 並解析主旨與全文
+def load_testdata():
+    data_path = os.path.abspath(os.path.join(os.path.dirname(__file__), 'testdata.txt'))
+    items = []
+    if os.path.exists(data_path):
+        with open(data_path, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                # 解析主旨
+                if line.startswith('主旨：'):
+                    parts = line.split('內容：', 1)
+                    if len(parts) == 2:
+                        subject = parts[0].replace('主旨：', '').replace('\n', '').strip()
+                        content = parts[1].replace('\n', '').strip()
+                        full = f"主旨：{subject}\n內容：{content}"
+                        items.append({'subject': subject, 'content': content, 'full': full})
+    return items
+
+testdata_items = load_testdata()
+testdata_subjects = [item['subject'] for item in testdata_items]
+
 # 透過 st.secrets 讀取機密與設定
 openai.api_key = st.secrets['OpenAI']['api_key']
 openai.api_base = st.secrets['OpenAI']['base_url']
@@ -79,9 +102,25 @@ st.set_page_config(page_title='自動回覆系統', layout='wide')
 
 st.title('自動回覆系統')
 
-# 使用者輸入來文內容 (可直接使用下方範例進行測試)
-sample_text = "主旨：關於遲到扣薪的問題\n內容：根據公司的規定，每遲到一分鐘就會扣除30元，到了第十分鐘不僅累計了原有的扣款，還額外加上了全勤獎金等值的10分鐘扣款，合計高達5300元。請問這個處罰合理嗎。另外還訂定排名獎懲制，出勤排名最後五名的還要罰款1000，這樣沒有違法嗎?"
-query = st.text_area('請輸入來文內容', value=sample_text, height=200)
+
+# 預設內容
+default_text = testdata_items[0]['full'] if testdata_items else ''
+if 'query_text' not in st.session_state:
+    st.session_state['query_text'] = default_text
+
+# 新增選單：選擇範例來文
+def on_select_change():
+    idx = st.session_state['testdata_select']
+    if 0 <= idx < len(testdata_items):
+        st.session_state['query_text'] = testdata_items[idx]['full']
+
+st.markdown('**選擇範例來文自動帶入下方欄位：**')
+testdata_idx = 0
+if testdata_items:
+    testdata_idx = st.selectbox('選擇範例主旨', options=range(len(testdata_subjects)), format_func=lambda i: testdata_subjects[i], key='testdata_select', on_change=on_select_change)
+
+# 使用者輸入來文內容
+query = st.text_area('請輸入來文內容', value=st.session_state['query_text'], height=200, key='query_text')
 
 # 選擇搜尋欄位
 option_map = {'歷史來文 (qs)': 'qs', '歷史回文 (answer)': 'answer'}
